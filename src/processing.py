@@ -3,7 +3,7 @@
 Содержит функции для фильтрации и сортировки транзакций.
 """
 
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 def filter_by_state(transactions: List[Dict[str, Any]], state: str = "EXECUTED") -> List[Dict[str, Any]]:
@@ -28,4 +28,3 @@ def sort_by_date(transactions: List[Dict[str, Any]], reverse: bool = True) -> Li
     # Сортировка по ключу 'date'
     # Если в каком-то словаре нет ключа 'date', используется пустая строка
     return sorted(transactions, key=lambda x: x.get('date', ''), reverse=reverse)
-
