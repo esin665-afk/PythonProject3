@@ -1,10 +1,31 @@
+from typing import Union
+
 """
 Модуль для маскирования данных карт и счетов.
 """
 
 
-def get_mask_card_number(card_number: str) -> str:
-    """Маскирует номер карты: 7000 79** **** 6361"""
+def get_mask_card_number(card_number: Union[str, int]) -> str:
+    """
+    Маскирует номер банковской карты.
+
+    Формат вывода: XXXX XX** **** XXXX
+    Видны первые 6 цифр и последние 4 цифры.
+
+    Args:
+        card_number: Номер карты (16 цифр).
+
+    Returns:
+        Замаскированный номер карты.
+
+    Raises:
+        ValueError: Если номер пустой, содержит буквы или длина не 16.
+
+    Example:
+        >>> get_mask_card_number("7000792289606361")
+        '7000 79** **** 6361'
+    """
+    ...
     card_str = str(card_number).strip()
     # Проверка на пустую строку
     if not card_str:
@@ -23,7 +44,28 @@ def get_mask_card_number(card_number: str) -> str:
 
 
 def get_mask_account(account_number: str) -> str:
-    """Маскирует номер счета: **4305"""
+    """
+    Маскирует номер банковского счета.
+
+    Формат вывода: **XXXX
+    Видны только последние 4 цифры номера.
+
+    Args:
+        account_number (Union[str, int]): Номер счета.
+
+    Returns:
+        str: Замаскированный номер счета в формате "**XXXX".
+
+    Raises:
+        ValueError: Если номер счета пустой, содержит не цифры или его длина меньше 4.
+
+    Example:
+        >>> get_mask_account("73654108430135874305")
+        '**4305'
+
+        >>> get_mask_account(12345678901234567890)
+        '**7890'
+    """
     # Преобразуем в строку
     account_str = str(account_number).strip()
 
