@@ -176,17 +176,24 @@ pip install flake8 black isort mypy
 PythonProject3/
 ├── src/
 │   ├── __init__.py
-│   ├── masks.py
-│   └── processing.py
+│   ├── masks.py              # Маскирование номеров карт и счетов
+│   ├── processing.py         # Фильтрация и сортировка транзакций
+│   ├── widget.py             # Обработка строк с картами и счетами
+│   └── generators.py         # Генераторы для обработки данных
+│
 ├── tests/
 │   ├── __init__.py
-│   ├── test_masks.py
-│   └── test_processing.py
-├── .flake8
-├── .gitignore
-├── pyproject.toml
-├── poetry.lock
-└── README.md
+│   ├── conftest.py           # Общие фикстуры для всех тестов
+│   ├── test_masks.py         # Тесты для модуля masks
+│   ├── test_processing.py    # Тесты для модуля processing
+│   ├── test_widget.py        # Тесты для модуля widget
+│   └── test_generators.py    # Тесты для модуля generators
+│
+├── .flake8                   # Конфигурация Flake8
+├── .gitignore                # Игнорируемые файлы Git
+├── pyproject.toml            # Конфигурация Poetry и инструментов
+├── poetry.lock               # Зафиксированные зависимости
+└── README.md                 # Документация проекта
 ```
 
 ---
@@ -202,19 +209,14 @@ PythonProject3/
 **Формат вывода:** `XXXX XX** **** XXXX`  
 **Правила:** видны первые 6 цифр и последние 4 цифры, остальные заменены звёздочками.
 
-**Пример использования:**
+**Пример:**
 ```python
 from src.masks import get_mask_card_number
 
 card = "7000792289606361"
 masked = get_mask_card_number(card)
-print(masked)
-# Вывод: 7000 79** **** 6361
+print(masked)  # 7000 79** **** 6361
 ```
-
-**Обработка ошибок:**
-- Если номер содержит меньше 16 цифр → выбрасывается `ValueError`
-- Если номер содержит буквы → выбрасывается `ValueError`
 
 ---
 
@@ -223,43 +225,31 @@ print(masked)
 Маскирует номер банковского счета.
 
 **Формат вывода:** `**XXXX`  
-**Правила:** видны только последние 4 цифры номера.
+**Правила:** видны только последние 4 цифры.
 
-**Пример использования:**
+**Пример:**
 ```python
 from src.masks import get_mask_account
 
 account = "73654108430135874305"
 masked = get_mask_account(account)
-print(masked)
-# Вывод: **4305
+print(masked)  # **4305
 ```
-
-**Обработка ошибок:**
-- Если номер содержит менее 4 цифр → выбрасывается `ValueError`
-- Если номер содержит буквы → выбрасывается `ValueError`
 
 ---
 
 #### 3. `get_date(date_string: str) -> str`
 
-Преобразует дату из формата ISO в формат `ДД.ММ.ГГГГ`.
+Преобразует дату из формата ISO в `ДД.ММ.ГГГГ`.
 
-**Входной формат:** `"YYYY-MM-DDTHH:MM:SS.ffffff"`  
-**Выходной формат:** `"ДД.ММ.ГГГГ"`
-
-**Пример использования:**
+**Пример:**
 ```python
 from src.masks import get_date
 
 date_str = "2024-03-11T02:26:18.671407"
 formatted = get_date(date_str)
-print(formatted)
-# Вывод: 11.03.2024
+print(formatted)  # 11.03.2024
 ```
-
-**Обработка ошибок:**
-- Если строка не соответствует формату ISO → выбрасывается `ValueError`
 
 ---
 
@@ -267,93 +257,133 @@ print(formatted)
 
 #### 4. `filter_by_state(transactions: List[Dict], state: str = "EXECUTED") -> List[Dict]`
 
-Фильтрует список транзакций по статусу.
+Фильтрует транзакции по статусу.
 
-**Параметры:**
-- `transactions` — список словарей с транзакциями
-- `state` — статус для фильтрации (по умолчанию `"EXECUTED"`)
-
-**Пример использования:**
+**Пример:**
 ```python
 from src.processing import filter_by_state
 
 transactions = [
-    {'id': 41428829, 'state': 'EXECUTED', 'date': '2019-07-03T18:35:29.512364'},
-    {'id': 939719570, 'state': 'EXECUTED', 'date': '2018-06-30T02:08:58.425572'},
-    {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
-    {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}
+    {'id': 1, 'state': 'EXECUTED'},
+    {'id': 2, 'state': 'PENDING'}
 ]
 
-# Фильтр по умолчанию (EXECUTED)
 executed = filter_by_state(transactions)
-print(executed)
-# Вывод: [{'id': 41428829, ...}, {'id': 939719570, ...}]
-
-# Фильтр по статусу CANCELED
-canceled = filter_by_state(transactions, 'CANCELED')
-print(canceled)
-# Вывод: [{'id': 594226727, ...}, {'id': 615064591, ...}]
+print(executed)  # [{'id': 1, 'state': 'EXECUTED'}]
 ```
 
 ---
 
 #### 5. `sort_by_date(transactions: List[Dict], reverse: bool = True) -> List[Dict]`
 
-Сортирует список транзакций по дате.
+Сортирует транзакции по дате.
 
-**Параметры:**
-- `transactions` — список словарей с транзакциями
-- `reverse` — порядок сортировки:
-  - `True` (по умолчанию) — по убыванию (сначала новые)
-  - `False` — по возрастанию (сначала старые)
-
-**Пример использования:**
+**Пример:**
 ```python
 from src.processing import sort_by_date
 
-transactions = [
-    {'id': 41428829, 'state': 'EXECUTED', 'date': '2019-07-03T18:35:29.512364'},
-    {'id': 939719570, 'state': 'EXECUTED', 'date': '2018-06-30T02:08:58.425572'},
-    {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
-    {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}
-]
-
-# Сортировка по убыванию (новые сначала)
-sorted_desc = sort_by_date(transactions)
-print(sorted_desc)
-# Вывод: сначала 2019-07-03, затем 2018-10-14, 2018-09-12, 2018-06-30
-
-# Сортировка по возрастанию (старые сначала)
-sorted_asc = sort_by_date(transactions, reverse=False)
-print(sorted_asc)
-# Вывод: сначала 2018-06-30, затем 2018-09-12, 2018-10-14, 2019-07-03
+sorted_transactions = sort_by_date(transactions)
+print(sorted_transactions)  # Сначала новые
 ```
 
 ---
 
-### 🔄 Комбинированное использование функций
+### Модуль `widget.py` — обработка строк с картами и счетами
 
-Часто функции применяются вместе: сначала фильтрация, затем сортировка.
+#### 6. `mask_account_card(account_card_info: str) -> str`
+
+Принимает строку с типом и номером карты/счета, возвращает строку с замаскированным номером.
 
 **Пример:**
 ```python
-from src.processing import filter_by_state, sort_by_date
+from src.widget import mask_account_card
+
+result = mask_account_card("Visa 7000792289606361")
+print(result)  # Visa 7000 79** **** 6361
+
+result = mask_account_card("Счет 73654108430135874305")
+print(result)  # Счет **4305
+```
+
+---
+
+### Модуль `generators.py` — функции-генераторы (НОВЫЙ МОДУЛЬ)
+
+#### 7. `filter_by_currency(transactions: List[Dict], currency: str = "USD") -> Iterator[Dict]`
+
+Генератор, фильтрующий транзакции по валюте.
+
+**Пример:**
+```python
+from src.generators import filter_by_currency
 
 transactions = [
-    {'id': 41428829, 'state': 'EXECUTED', 'date': '2019-07-03T18:35:29.512364'},
-    {'id': 939719570, 'state': 'EXECUTED', 'date': '2018-06-30T02:08:58.425572'},
-    {'id': 594226727, 'state': 'CANCELED', 'date': '2018-09-12T21:27:25.241689'},
-    {'id': 615064591, 'state': 'CANCELED', 'date': '2018-10-14T08:21:33.419441'}
+    {"id": 1, "operationAmount": {"currency": {"code": "USD"}}},
+    {"id": 2, "operationAmount": {"currency": {"code": "EUR"}}},
+    {"id": 3, "operationAmount": {"currency": {"code": "USD"}}},
 ]
 
-# 1. Отфильтровать выполненные транзакции
-filtered = filter_by_state(transactions, 'EXECUTED')
+usd = filter_by_currency(transactions, "USD")
+for tr in usd:
+    print(tr["id"])
+# Вывод: 1, 3
+```
 
-# 2. Отсортировать их по дате (новые сначала)
-sorted_filtered = sort_by_date(filtered)
+---
 
-print(sorted_filtered)
-# Вывод: [{'id': 41428829, ...}, {'id': 939719570, ...}]
+#### 8. `transaction_descriptions(transactions: List[Dict]) -> Iterator[str]`
+
+Генератор, возвращающий описания транзакций.
+
+**Пример:**
+```python
+from src.generators import transaction_descriptions
+
+transactions = [
+    {"description": "Перевод организации"},
+    {"description": "Оплата услуг"},
+]
+
+descriptions = transaction_descriptions(transactions)
+for desc in descriptions:
+    print(desc)
+# Вывод: Перевод организации, Оплата услуг
+```
+
+---
+
+#### 9. `card_number_generator(start: int, stop: int) -> Iterator[str]`
+
+Генератор номеров банковских карт в формате `XXXX XXXX XXXX XXXX`.
+
+**Параметры:**
+- `start` — начальное значение (включительно)
+- `stop` — конечное значение (не включительно, как в `range()`)
+
+**Пример:**
+```python
+from src.generators import card_number_generator
+
+for card in card_number_generator(1, 5):
+    print(card)
+# 0000 0000 0000 0001
+# 0000 0000 0000 0002
+# 0000 0000 0000 0003
+# 0000 0000 0000 0004
+```
+
+---
+
+### 🔄 Комбинированное использование
+
+```python
+from src.generators import filter_by_currency, transaction_descriptions
+
+usd_transactions = filter_by_currency(transactions, "USD")
+descriptions = transaction_descriptions(list(usd_transactions))
+
+for desc in descriptions:
+    print(desc)
 ```
 
 ---
@@ -373,6 +403,7 @@ poetry run pytest tests/ -v
 poetry run pytest tests/test_masks.py -v
 poetry run pytest tests/test_processing.py -v
 poetry run pytest tests/test_widget.py -v
+poetry run pytest tests/test_generators.py -v
 ```
 
 ### Запуск тестов с отчётом о покрытии
@@ -385,13 +416,14 @@ poetry run pytest tests/ --cov=src --cov-report=term-missing
 
 ```
 ============================= test session starts ==============================
-collected 28 items
+collected 33 items
 
-tests/test_masks.py ............                                       [ 42%]
-tests/test_processing.py ........                                      [ 71%]
-tests/test_widget.py ........                                          [100%]
+tests/test_masks.py ............                                       [ 36%]
+tests/test_processing.py ........                                      [ 60%]
+tests/test_widget.py ........                                          [ 84%]
+tests/test_generators.py .....                                         [100%]
 
-============================== 28 passed in 0.15s ==============================
+============================== 33 passed in 0.18s ==============================
 ```
 
 ### Покрытие кода тестами
@@ -402,16 +434,16 @@ tests/test_widget.py ........                                          [100%]
 poetry run pytest tests/ --cov=src --cov-report=html
 ```
 
-После этого откройте `htmlcov/index.html` в браузере, чтобы увидеть детальный отчёт по каждой функции и строке кода.
-
+После этого откройте `htmlcov/index.html` в браузере, чтобы увидеть детальный отчёт по каждой функции и строке кода
 ### Структура тестов
 
 ```
 tests/
-├── conftest.py          # Фикстуры для тестов
-├── test_masks.py        # Тесты для модуля masks
-├── test_processing.py   # Тесты для модуля processing
-└── test_widget.py       # Тесты для модуля widget
+├── conftest.py              # Общие фикстуры для всех тестов
+├── test_masks.py            # Тесты для модуля masks
+├── test_processing.py       # Тесты для модуля processing
+├── test_widget.py           # Тесты для модуля widget
+└── test_generators.py       # Тесты для модуля generators
 ```
 
 ### Что тестируется
@@ -420,13 +452,14 @@ tests/
 |--------|---------|-------------------|
 | `masks.py` | `get_mask_card_number`, `get_mask_account`, `get_date` | ~15 |
 | `processing.py` | `filter_by_state`, `sort_by_date` | ~10 |
-| `widget.py` | `mask_account_card`, `get_date` | ~8 |
-
+| `widget.py` | `mask_account_card` | ~8 |
+| `generators.py` | `filter_by_currency`, `transaction_descriptions`, `card_number_generator` | ~18 |
 Все тесты используют:
 - ✅ Фикстуры для общих данных
 - ✅ Параметризацию для разных случаев
 - ✅ Проверку исключений (`pytest.raises`)
 - ✅ Граничные случаи
+
 ## 👨‍💻 Автор
 
 **Василий Есин**  
