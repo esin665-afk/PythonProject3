@@ -357,7 +357,76 @@ print(sorted_filtered)
 ```
 
 ---
+## 🧪 Тестирование
 
+Для проверки работоспособности проекта используется библиотека `pytest` с плагином `pytest-cov` для измерения покрытия кода.
+
+### Запуск всех тестов
+
+```bash
+poetry run pytest tests/ -v
+```
+
+### Запуск конкретного файла с тестами
+
+```bash
+poetry run pytest tests/test_masks.py -v
+poetry run pytest tests/test_processing.py -v
+poetry run pytest tests/test_widget.py -v
+```
+
+### Запуск тестов с отчётом о покрытии
+
+```bash
+poetry run pytest tests/ --cov=src --cov-report=term-missing
+```
+
+### Пример вывода
+
+```
+============================= test session starts ==============================
+collected 28 items
+
+tests/test_masks.py ............                                       [ 42%]
+tests/test_processing.py ........                                      [ 71%]
+tests/test_widget.py ........                                          [100%]
+
+============================== 28 passed in 0.15s ==============================
+```
+
+### Покрытие кода тестами
+
+Цель проекта — **не менее 80% покрытия**. Для проверки используйте команду:
+
+```bash
+poetry run pytest tests/ --cov=src --cov-report=html
+```
+
+После этого откройте `htmlcov/index.html` в браузере, чтобы увидеть детальный отчёт по каждой функции и строке кода.
+
+### Структура тестов
+
+```
+tests/
+├── conftest.py          # Фикстуры для тестов
+├── test_masks.py        # Тесты для модуля masks
+├── test_processing.py   # Тесты для модуля processing
+└── test_widget.py       # Тесты для модуля widget
+```
+
+### Что тестируется
+
+| Модуль | Функции | Количество тестов |
+|--------|---------|-------------------|
+| `masks.py` | `get_mask_card_number`, `get_mask_account`, `get_date` | ~15 |
+| `processing.py` | `filter_by_state`, `sort_by_date` | ~10 |
+| `widget.py` | `mask_account_card`, `get_date` | ~8 |
+
+Все тесты используют:
+- ✅ Фикстуры для общих данных
+- ✅ Параметризацию для разных случаев
+- ✅ Проверку исключений (`pytest.raises`)
+- ✅ Граничные случаи
 ## 👨‍💻 Автор
 
 **Василий Есин**  
@@ -367,3 +436,5 @@ print(sorted_filtered)
 ---
 
 ⭐ Если функции полезны — поставьте звёздочку на GitHub!
+
+
