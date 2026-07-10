@@ -46,3 +46,47 @@ def sample_dates() -> List[str]:
         "1999-01-01T00:00:00.000000",
         "2023-06-15T14:22:30.123456",
     ]
+
+
+@pytest.fixture
+def transactions_with_currency() -> List[Dict[str, Any]]:
+    """Фикстура с транзакциями, содержащими валюты."""
+    return [
+        {
+            "id": 1,
+            "operationAmount": {"currency": {"code": "USD"}, "amount": "100.00"},
+            "description": "Перевод на карту"
+        },
+        {
+            "id": 2,
+            "operationAmount": {"currency": {"code": "EUR"}, "amount": "50.00"},
+            "description": "Оплата услуг"
+        },
+        {
+            "id": 3,
+            "operationAmount": {"currency": {"code": "USD"}, "amount": "200.00"},
+            "description": "Пополнение счета"
+        },
+        {
+            "id": 4,
+            "operationAmount": {"currency": {"code": "RUB"}, "amount": "5000.00"},
+            "description": "Перевод по номеру телефона"
+        },
+        {
+            "id": 5,
+            "operationAmount": {"currency": {"code": "USD"}, "amount": "150.00"},
+            "description": "Оплата подписки"
+        },
+    ]
+
+
+@pytest.fixture
+def transactions_with_descriptions() -> List[Dict[str, Any]]:
+    """Фикстура с транзакциями, содержащими описания."""
+    return [
+        {"id": 1, "description": "Перевод на карту"},
+        {"id": 2, "description": "Оплата услуг"},
+        {"id": 3, "description": "Пополнение счета"},
+        {"id": 4, "description": "Перевод по номеру телефона"},
+        {"id": 5, "description": "Оплата подписки"},
+    ]
