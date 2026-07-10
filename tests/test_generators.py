@@ -6,147 +6,58 @@ import pytest
 
 from src.generators import card_number_generator, filter_by_currency, transaction_descriptions
 
-# ============================================================
-# ПРИМЕР ВХОДНЫХ ДАННЫХ ИЗ ЗАДАНИЯ
-# ============================================================
-
-transactions = [
-    {
-        "id": 939719570,
-        "state": "EXECUTED",
-        "date": "2018-06-30T02:08:58.425572",
-        "operationAmount": {
-            "amount": "9824.07",
-            "currency": {
-                "name": "USD",
-                "code": "USD"
-            }
-        },
-        "description": "Перевод организации",
-        "from": "Счет 75106830613657916952",
-        "to": "Счет 11776614605963066702"
-    },
-    {
-        "id": 142264268,
-        "state": "EXECUTED",
-        "date": "2019-04-04T23:20:05.206878",
-        "operationAmount": {
-            "amount": "79114.93",
-            "currency": {
-                "name": "USD",
-                "code": "USD"
-            }
-        },
-        "description": "Перевод со счета на счет",
-        "from": "Счет 19708645243227258542",
-        "to": "Счет 75651667383060284188"
-    },
-    {
-        "id": 873106923,
-        "state": "EXECUTED",
-        "date": "2019-03-23T01:09:46.296404",
-        "operationAmount": {
-            "amount": "43318.34",
-            "currency": {
-                "name": "руб.",
-                "code": "RUB"
-            }
-        },
-        "description": "Перевод со счета на счет",
-        "from": "Счет 44812258784861134719",
-        "to": "Счет 74489636417521191160"
-    },
-    {
-        "id": 895315941,
-        "state": "EXECUTED",
-        "date": "2018-08-19T04:27:37.904916",
-        "operationAmount": {
-            "amount": "56883.54",
-            "currency": {
-                "name": "USD",
-                "code": "USD"
-            }
-        },
-        "description": "Перевод с карты на карту",
-        "from": "Visa Classic 6831982476737658",
-        "to": "Visa Platinum 8990922113665229"
-    },
-    {
-        "id": 594226727,
-        "state": "CANCELED",
-        "date": "2018-09-12T21:27:25.241689",
-        "operationAmount": {
-            "amount": "67314.70",
-            "currency": {
-                "name": "руб.",
-                "code": "RUB"
-            }
-        },
-        "description": "Перевод организации",
-        "from": "Visa Platinum 1246377376343588",
-        "to": "Счет 14211924144426031657"
-    }
-]
-
 
 # ============================================================
-# ТЕСТЫ ДЛЯ filter_by_currency (используют пример из задания)
+# ТЕСТЫ ДЛЯ filter_by_currency (используют фикстуру)
 # ============================================================
 
-def test_filter_by_currency_usd_from_example():
+def test_filter_by_currency_usd_from_example(example_transactions_from_homework):
     """Тест: фильтрация по USD из примера в задании."""
-    result = list(filter_by_currency(transactions, "USD"))
+    result = list(filter_by_currency(example_transactions_from_homework, "USD"))
 
-    # Ожидаем 3 транзакции с USD (id: 939719570, 142264268, 895315941)
     assert len(result) == 3
     assert result[0]["id"] == 939719570
     assert result[1]["id"] == 142264268
     assert result[2]["id"] == 895315941
 
-    # Проверяем, что все транзакции имеют валюту USD
     for tr in result:
         assert tr["operationAmount"]["currency"]["code"] == "USD"
 
 
-def test_filter_by_currency_rub_from_example():
+def test_filter_by_currency_rub_from_example(example_transactions_from_homework):
     """Тест: фильтрация по RUB из примера в задании."""
-    result = list(filter_by_currency(transactions, "RUB"))
+    result = list(filter_by_currency(example_transactions_from_homework, "RUB"))
 
-    # Ожидаем 2 транзакции с RUB (id: 873106923, 594226727)
     assert len(result) == 2
     assert result[0]["id"] == 873106923
     assert result[1]["id"] == 594226727
 
-    # Проверяем, что все транзакции имеют валюту RUB
     for tr in result:
         assert tr["operationAmount"]["currency"]["code"] == "RUB"
 
 
-def test_filter_by_currency_eur_from_example():
+def test_filter_by_currency_eur_from_example(example_transactions_from_homework):
     """Тест: фильтрация по EUR (в примере нет EUR)."""
-    result = list(filter_by_currency(transactions, "EUR"))
+    result = list(filter_by_currency(example_transactions_from_homework, "EUR"))
     assert result == []
 
 
-def test_filter_by_currency_default_from_example():
+def test_filter_by_currency_default_from_example(example_transactions_from_homework):
     """Тест: валюта по умолчанию (USD) из примера."""
-    result = list(filter_by_currency(transactions))
+    result = list(filter_by_currency(example_transactions_from_homework))
 
-    # Ожидаем 3 транзакции с USD
     assert len(result) == 3
     for tr in result:
         assert tr["operationAmount"]["currency"]["code"] == "USD"
 
 
-def test_filter_by_currency_generator_behavior_from_example():
+def test_filter_by_currency_generator_behavior_from_example(example_transactions_from_homework):
     """Тест: проверка поведения генератора на примере из задания."""
-    gen = filter_by_currency(transactions, "USD")
+    gen = filter_by_currency(example_transactions_from_homework, "USD")
 
-    # Проверяем, что это генератор
     assert hasattr(gen, "__iter__")
     assert hasattr(gen, "__next__")
 
-    # Проверяем пошаговую выдачу
     first = next(gen)
     assert first["id"] == 939719570
 
@@ -156,18 +67,17 @@ def test_filter_by_currency_generator_behavior_from_example():
     third = next(gen)
     assert third["id"] == 895315941
 
-    # Транзакций с USD больше нет
     with pytest.raises(StopIteration):
         next(gen)
 
 
 # ============================================================
-# ТЕСТЫ ДЛЯ transaction_descriptions (используют пример из задания)
+# ТЕСТЫ ДЛЯ transaction_descriptions (используют фикстуру)
 # ============================================================
 
-def test_transaction_descriptions_from_example():
+def test_transaction_descriptions_from_example(example_transactions_from_homework):
     """Тест: получение описаний из примера в задании."""
-    result = list(transaction_descriptions(transactions))
+    result = list(transaction_descriptions(example_transactions_from_homework))
 
     expected = [
         "Перевод организации",
@@ -179,9 +89,9 @@ def test_transaction_descriptions_from_example():
     assert result == expected
 
 
-def test_transaction_descriptions_generator_behavior_from_example():
+def test_transaction_descriptions_generator_behavior_from_example(example_transactions_from_homework):
     """Тест: проверка поведения генератора на примере из задания."""
-    gen = transaction_descriptions(transactions)
+    gen = transaction_descriptions(example_transactions_from_homework)
 
     assert hasattr(gen, "__iter__")
     assert hasattr(gen, "__next__")
@@ -192,7 +102,6 @@ def test_transaction_descriptions_generator_behavior_from_example():
     second = next(gen)
     assert second == "Перевод со счета на счет"
 
-    # Проверяем, что можно преобразовать в список
     remaining = list(gen)
     assert len(remaining) == 3
 
@@ -255,11 +164,9 @@ def test_card_number_generator_format():
 
 def test_card_number_generator_edge_cases():
     """Тест: крайние значения диапазона."""
-    # Минимальное значение (0)
     result = list(card_number_generator(0, 1))
     assert result == ['0000 0000 0000 0000']
 
-    # Максимальное значение (9999999999999999)
     result = list(card_number_generator(9999999999999999, 10000000000000000))
     assert result == ['9999 9999 9999 9999']
 
@@ -274,8 +181,8 @@ def test_card_number_generator_stop_iteration():
 
 
 @pytest.mark.parametrize("start, stop", [
-    (5, 5),   # start == stop
-    (10, 5),  # start > stop
+    (5, 5),
+    (10, 5),
 ])
 def test_card_number_generator_start_ge_stop(start, stop):
     """Тест: ошибка когда start >= stop."""
