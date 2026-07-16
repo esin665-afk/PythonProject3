@@ -464,6 +464,7 @@ tests/
 ```
 
 ### Что тестируется
+### Что тестируется
 
 | Модуль | Функции | Количество тестов |
 |--------|---------|-------------------|
@@ -471,6 +472,7 @@ tests/
 | `processing.py` | `filter_by_state`, `sort_by_date` | ~10 |
 | `widget.py` | `mask_account_card` | ~8 |
 | `generators.py` | `filter_by_currency`, `transaction_descriptions`, `card_number_generator` | ~18 |
+| `decorators.py` | `log` | ~6 |
 Все тесты используют:
 - ✅ Фикстуры для общих данных
 - ✅ Параметризацию для разных случаев
