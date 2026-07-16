@@ -421,7 +421,7 @@ poetry run pytest tests/test_masks.py -v
 poetry run pytest tests/test_processing.py -v
 poetry run pytest tests/test_widget.py -v
 poetry run pytest tests/test_generators.py -v
-```
+poetry run pytest tests/test_decorators.py -v
 
 ### Запуск тестов с отчётом о покрытии
 
