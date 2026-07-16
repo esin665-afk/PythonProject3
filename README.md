@@ -173,27 +173,13 @@ pip install flake8 black isort mypy
 ## 📦 Структура проекта (для справки)
 
 ```
-PythonProject3/
-├── src/
-│   ├── __init__.py
-│   ├── masks.py              # Маскирование номеров карт и счетов
-│   ├── processing.py         # Фильтрация и сортировка транзакций
-│   ├── widget.py             # Обработка строк с картами и счетами
-│   └── generators.py         # Генераторы для обработки данных
-│
-├── tests/
-│   ├── __init__.py
-│   ├── conftest.py           # Общие фикстуры для всех тестов
-│   ├── test_masks.py         # Тесты для модуля masks
-│   ├── test_processing.py    # Тесты для модуля processing
-│   ├── test_widget.py        # Тесты для модуля widget
-│   └── test_generators.py    # Тесты для модуля generators
-│
-├── .flake8                   # Конфигурация Flake8
-├── .gitignore                # Игнорируемые файлы Git
-├── pyproject.toml            # Конфигурация Poetry и инструментов
-├── poetry.lock               # Зафиксированные зависимости
-└── README.md                 # Документация проекта
+src/
+├── __init__.py
+├── decorators.py         # Декораторы для логирования (НОВЫЙ МОДУЛЬ)
+├── generators.py
+├── masks.py
+├── processing.py
+└── widget.py
 ```
 
 ---
@@ -371,9 +357,40 @@ for card in card_number_generator(1, 5):
 # 0000 0000 0000 0003
 # 0000 0000 0000 0004
 ```
+### Модуль `decorators.py` — декораторы для логирования
 
+#### `log(filename: Optional[str] = None) -> Callable`
+
+Декоратор для автоматического логирования вызовов функций.
+
+**Параметры:**
+- `filename` — имя файла для записи логов (если не указан, логи выводятся в консоль)
+
+**Логирование:**
+- При успешном выполнении: `имя_функции ok`
+- При ошибке: `имя_функции error: тип_ошибки. Inputs: (аргументы), {kwargs}`
+
+**Пример использования:**
+
+```python
+from src.decorators import log
+
+# Логирование в консоль
+@log()
+def my_function(x, y):
+    return x + y
+
+my_function(1, 2)
+# Вывод в консоль: my_function ok
+
+# Логирование в файл
+@log(filename="mylog.txt")
+def my_function(x, y):
+    return x + y
+
+my_function(1, 2)
+# mylog.txt: my_function ok
 ---
-
 ### 🔄 Комбинированное использование
 
 ```python
