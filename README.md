@@ -431,18 +431,16 @@ poetry run pytest tests/ --cov=src --cov-report=term-missing
 
 ### Пример вывода
 
-```
 ============================= test session starts ==============================
-collected 33 items
+collected 38 items
 
-tests/test_masks.py ............                                       [ 36%]
-tests/test_processing.py ........                                      [ 60%]
-tests/test_widget.py ........                                          [ 84%]
-tests/test_generators.py .....                                         [100%]
+tests/test_masks.py ............ [ 31%]
+tests/test_processing.py ........ [ 52%]
+tests/test_widget.py ........ [ 73%]
+tests/test_generators.py ..... [ 89%]
+tests/test_decorators.py ..... [100%]
 
-============================== 33 passed in 0.18s ==============================
-```
-
+============================== 38 passed in 0.20s ==============================
 ### Покрытие кода тестами
 
 Цель проекта — **не менее 80% покрытия**. Для проверки используйте команду:
@@ -454,16 +452,13 @@ poetry run pytest tests/ --cov=src --cov-report=html
 После этого откройте `htmlcov/index.html` в браузере, чтобы увидеть детальный отчёт по каждой функции и строке кода
 ### Структура тестов
 
-```
 tests/
-├── conftest.py              # Общие фикстуры для всех тестов
-├── test_masks.py            # Тесты для модуля masks
-├── test_processing.py       # Тесты для модуля processing
-├── test_widget.py           # Тесты для модуля widget
-└── test_generators.py       # Тесты для модуля generators
-```
-
-### Что тестируется
+├── conftest.py # Общие фикстуры для всех тестов
+├── test_masks.py # Тесты для модуля masks
+├── test_processing.py # Тесты для модуля processing
+├── test_widget.py # Тесты для модуля widget
+├── test_generators.py # Тесты для модуля generators
+└── test_decorators.py # Тесты для модуля decorators (НОВЫЙ)
 ### Что тестируется
 
 | Модуль | Функции | Количество тестов |
