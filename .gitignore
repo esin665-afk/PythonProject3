@@ -226,4 +226,4 @@ __marimo__/
 
 # Exported HTML
 exportToHTML/
-*.html
+*.html.env
