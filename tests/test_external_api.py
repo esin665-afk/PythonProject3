@@ -2,8 +2,9 @@
 Тесты для модуля external_api.py.
 """
 
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 import requests
 
 from src.external_api import convert_to_rubles
