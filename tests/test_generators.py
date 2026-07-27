@@ -10,8 +10,9 @@ from src.generators import card_number_generator, filter_by_currency, transactio
 # ТЕСТЫ ДЛЯ filter_by_currency (используют фикстуру)
 # ============================================================
 
+
 def test_filter_by_currency_usd_from_example(example_transactions_from_homework):
-    """Тест: фильтрация по USD из примера в задании."""
+    """Тест: фильтрация по USD."""
     result = list(filter_by_currency(example_transactions_from_homework, "USD"))
 
     assert len(result) == 3
@@ -24,7 +25,7 @@ def test_filter_by_currency_usd_from_example(example_transactions_from_homework)
 
 
 def test_filter_by_currency_rub_from_example(example_transactions_from_homework):
-    """Тест: фильтрация по RUB из примера в задании."""
+    """Тест: фильтрация по RUB."""
     result = list(filter_by_currency(example_transactions_from_homework, "RUB"))
 
     assert len(result) == 2
@@ -36,13 +37,13 @@ def test_filter_by_currency_rub_from_example(example_transactions_from_homework)
 
 
 def test_filter_by_currency_eur_from_example(example_transactions_from_homework):
-    """Тест: фильтрация по EUR (в примере нет EUR)."""
+    """Тест: фильтрация по EUR."""
     result = list(filter_by_currency(example_transactions_from_homework, "EUR"))
     assert result == []
 
 
 def test_filter_by_currency_default_from_example(example_transactions_from_homework):
-    """Тест: валюта по умолчанию (USD) из примера."""
+    """Тест: валюта по умолчанию (USD)."""
     result = list(filter_by_currency(example_transactions_from_homework))
 
     assert len(result) == 3
@@ -51,7 +52,7 @@ def test_filter_by_currency_default_from_example(example_transactions_from_homew
 
 
 def test_filter_by_currency_generator_behavior_from_example(example_transactions_from_homework):
-    """Тест: проверка поведения генератора на примере из задания."""
+    """Тест: проверка поведения генератора."""
     gen = filter_by_currency(example_transactions_from_homework, "USD")
 
     assert hasattr(gen, "__iter__")
@@ -70,12 +71,10 @@ def test_filter_by_currency_generator_behavior_from_example(example_transactions
         next(gen)
 
 
-# ============================================================
-# ТЕСТЫ ДЛЯ transaction_descriptions (используют фикстуру)
-# ============================================================
+# ТЕСТЫ ДЛЯ transaction_descriptions
 
 def test_transaction_descriptions_from_example(example_transactions_from_homework):
-    """Тест: получение описаний из примера в задании."""
+    """Тест: получение описаний."""
     result = list(transaction_descriptions(example_transactions_from_homework))
 
     expected = [
@@ -89,7 +88,7 @@ def test_transaction_descriptions_from_example(example_transactions_from_homewor
 
 
 def test_transaction_descriptions_generator_behavior_from_example(example_transactions_from_homework):
-    """Тест: проверка поведения генератора на примере из задания."""
+    """Тест: проверка поведения генератора."""
     gen = transaction_descriptions(example_transactions_from_homework)
 
     assert hasattr(gen, "__iter__")

@@ -27,6 +27,7 @@ def log(filename: Optional[str] = None) -> Callable[[Callable], Callable]:
         def my_function():
             pass
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:

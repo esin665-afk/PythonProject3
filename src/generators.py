@@ -5,9 +5,7 @@
 from typing import Any, Dict, Iterator, List
 
 
-def filter_by_currency(
-    transactions: List[Dict[str, Any]], currency: str = "USD"
-) -> Iterator[Dict[str, Any]]:
+def filter_by_currency(transactions: List[Dict[str, Any]], currency: str = "USD") -> Iterator[Dict[str, Any]]:
     """
     Генератор, который фильтрует транзакции по заданной валюте.
 
@@ -32,12 +30,7 @@ def filter_by_currency(
     """
     for transaction in transactions:
         try:
-            currency_code = (
-                transaction
-                .get("operationAmount", {})
-                .get("currency", {})
-                .get("code")
-            )
+            currency_code = transaction.get("operationAmount", {}).get("currency", {}).get("code")
             if currency_code == currency:
                 yield transaction
         except (AttributeError, TypeError):

@@ -34,9 +34,7 @@ def convert_to_rubles(transaction: Dict[str, Any]) -> float:
 
     url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={currency_code}&amount=1"
 
-    headers = {
-        "apikey": api_key
-    }
+    headers = {"apikey": api_key}
 
     try:
         response = requests.get(url, headers=headers, timeout=10)

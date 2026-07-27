@@ -13,10 +13,10 @@ os.makedirs(log_dir, exist_ok=True)
 masks_logger = logging.getLogger("masks")
 masks_logger.setLevel(logging.INFO)
 
-file_handler = logging.FileHandler(f"{log_dir}/masks.log", mode='w', encoding='utf-8')
+file_handler = logging.FileHandler(f"{log_dir}/masks.log", mode="w", encoding="utf-8")
 file_handler.setLevel(logging.INFO)
 
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 file_handler.setFormatter(formatter)
 
 masks_logger.addHandler(file_handler)
@@ -48,6 +48,7 @@ def get_mask_card_number(card_number: Union[str, int]) -> str:
     result = f"{card_str[:4]} {card_str[4:6]}** **** {card_str[-4:]}"
     masks_logger.info(f"Успешное маскирование: {result}")
     return result
+
 
 def get_mask_account(account_number: str) -> str:
     """
