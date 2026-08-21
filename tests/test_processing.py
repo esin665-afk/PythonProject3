@@ -1,5 +1,6 @@
 import pytest
-from src.processing import filter_by_state, sort_by_date, search_by_description, count_operations_by_category
+
+from src.processing import count_operations_by_category, filter_by_state, search_by_description, sort_by_date
 
 
 def test_filter_by_state_executed(sample_transactions):

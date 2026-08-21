@@ -4,6 +4,7 @@
 """
 
 import re
+from collections import Counter
 from typing import Any, Dict, List
 
 
@@ -45,19 +46,14 @@ def search_by_description(transactions: List[Dict[str, Any]], search_string: str
 
 
 def count_operations_by_category(transactions: List[Dict[str, Any]], categories: List[str]) -> Dict[str, int]:
-    """
-    Подсчитывает количество операций в каждой категории.
-    """
-    if not transactions or not categories:
-        return {category: 0 for category in categories} if categories else {}
-
-    result = {category: 0 for category in categories}
-
+    # Собираем все категории из описаний
+    found = []
     for transaction in transactions:
         description = transaction.get("description", "")
         for category in categories:
             if category.lower() in description.lower():
-                result[category] += 1
-                break  # Одна транзакция может попасть только в одну категорию
+                found.append(category)
+                break
 
-    return result
+    counter = Counter(found)
+    return {category: counter.get(category, 0) for category in categories}

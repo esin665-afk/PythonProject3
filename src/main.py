@@ -3,11 +3,11 @@
 """
 
 
-from src.file_reader import read_csv_file, read_excel_file
-from src.utils import load_transactions_from_json
-from src.processing import filter_by_state, sort_by_date, search_by_description
-from src.widget import mask_account_card, get_date
 from src.external_api import convert_to_rubles
+from src.file_reader import read_csv_file, read_excel_file
+from src.processing import filter_by_state, search_by_description, sort_by_date
+from src.utils import load_transactions_from_json
+from src.widget import get_date, mask_account_card
 
 
 def main() -> None:
