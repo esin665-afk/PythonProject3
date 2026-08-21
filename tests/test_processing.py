@@ -1,6 +1,5 @@
 import pytest
-
-from src.processing import filter_by_state, sort_by_date
+from src.processing import filter_by_state, sort_by_date, search_by_description
 
 
 def test_filter_by_state_executed(sample_transactions):
@@ -165,3 +164,46 @@ def test_sort_by_date_parametrized(reverse, expected_first):
     ]
     result = sort_by_date(transactions, reverse=reverse)
     assert result[0]["id"] == expected_first
+
+
+def test_search_by_description_found():
+    """Тест: найдены транзакции с искомой строкой."""
+    transactions = [
+        {"id": 1, "description": "Перевод организации"},
+        {"id": 2, "description": "Оплата услуг"},
+        {"id": 3, "description": "Перевод на карту"},
+    ]
+
+    result = search_by_description(transactions, "перевод")
+
+    assert len(result) == 2
+    assert result[0]["id"] == 1
+    assert result[1]["id"] == 3
+
+
+def test_search_by_description_not_found():
+    """Тест: транзакции не найдены."""
+    transactions = [
+        {"id": 1, "description": "Перевод организации"},
+        {"id": 2, "description": "Оплата услуг"},
+    ]
+
+    result = search_by_description(transactions, "пополнение")
+    assert result == []
+
+
+def test_search_by_description_case_insensitive():
+    """Тест: регистронезависимый поиск."""
+    transactions = [
+        {"id": 1, "description": "ПЕРЕВОД организации"},
+        {"id": 2, "description": "перевод на карту"},
+    ]
+
+    result = search_by_description(transactions, "Перевод")
+    assert len(result) == 2
+
+
+def test_search_by_description_empty():
+    """Тест: пустой список транзакций."""
+    result = search_by_description([], "перевод")
+    assert result == []
