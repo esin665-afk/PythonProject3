@@ -42,3 +42,22 @@ def search_by_description(transactions: List[Dict[str, Any]], search_string: str
     pattern = re.compile(re.escape(search_string), re.IGNORECASE)
 
     return [item for item in transactions if pattern.search(item.get("description", ""))]
+
+
+def count_operations_by_category(transactions: List[Dict[str, Any]], categories: List[str]) -> Dict[str, int]:
+    """
+    Подсчитывает количество операций в каждой категории.
+    """
+    if not transactions or not categories:
+        return {category: 0 for category in categories} if categories else {}
+
+    result = {category: 0 for category in categories}
+
+    for transaction in transactions:
+        description = transaction.get("description", "")
+        for category in categories:
+            if category.lower() in description.lower():
+                result[category] += 1
+                break  # Одна транзакция может попасть только в одну категорию
+
+    return result
