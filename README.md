@@ -176,15 +176,13 @@ src/
 ├── init.py
 ├── decorators.py # Декораторы для логирования
 ├── external_api.py # Конвертация валют через внешнее API
-├── file_reader.py # Чтение CSV и XLSX файлов (НОВЫЙ МОДУЛЬ)
+├── file_reader.py # Чтение CSV и XLSX файлов
 ├── generators.py # Функции-генераторы
+├── main.py # Основная логика программы (НОВЫЙ)
 ├── masks.py # Маскирование данных
-├── processing.py # Фильтрация и сортировка транзакций
+├── processing.py # Фильтрация, сортировка, поиск, подсчёт категорий
 ├── utils.py # Вспомогательные функции
 └── widget.py # Обработка строк с картами и счетами
-
----
-
 ## 📖 Инструкции по использованию функций
 
 ### Модуль `masks.py` — маскирование данных
@@ -225,24 +223,9 @@ print(masked)  # **4305
 
 ---
 
-#### 3. `get_date(date_string: str) -> str`
-
-Преобразует дату из формата ISO в `ДД.ММ.ГГГГ`.
-
-**Пример:**
-```python
-from src.masks import get_date
-
-date_str = "2024-03-11T02:26:18.671407"
-formatted = get_date(date_str)
-print(formatted)  # 11.03.2024
-```
-
----
-
 ### Модуль `processing.py` — обработка транзакций
 
-#### 4. `filter_by_state(transactions: List[Dict], state: str = "EXECUTED") -> List[Dict]`
+#### 3. `filter_by_state(transactions: List[Dict], state: str = "EXECUTED") -> List[Dict]`
 
 Фильтрует транзакции по статусу.
 
@@ -261,7 +244,7 @@ print(executed)  # [{'id': 1, 'state': 'EXECUTED'}]
 
 ---
 
-#### 5. `sort_by_date(transactions: List[Dict], reverse: bool = True) -> List[Dict]`
+#### 4. `sort_by_date(transactions: List[Dict], reverse: bool = True) -> List[Dict]`
 
 Сортирует транзакции по дате.
 
@@ -272,12 +255,43 @@ from src.processing import sort_by_date
 sorted_transactions = sort_by_date(transactions)
 print(sorted_transactions)  # Сначала новые
 ```
+#### 5. `search_by_description(transactions: List[Dict], search_string: str) -> List[Dict]`
 
+Ищет транзакции, в описании которых содержится заданная строка (регистронезависимо).
+
+**Пример:**
+```python
+from src.processing import search_by_description
+
+transactions = [
+    {"id": 1, "description": "Перевод организации"},
+    {"id": 2, "description": "Оплата услуг"},
+]
+
+result = search_by_description(transactions, "перевод")
+print(result)  # [{"id": 1, "description": "Перевод организации"}]
 ---
+#### 6. `count_operations_by_category(transactions: List[Dict], categories: List[str]) -> Dict[str, int]`
+
+Подсчитывает количество операций в каждой категории.
+
+**Пример:**
+```python
+from src.processing import count_operations_by_category
+
+transactions = [
+    {"description": "Перевод организации"},
+    {"description": "Оплата услуг"},
+    {"description": "Перевод на карту"},
+]
+
+categories = ["Перевод", "Оплата"]
+result = count_operations_by_category(transactions, categories)
+print(result)  # {"Перевод": 2, "Оплата": 1}
 
 ### Модуль `widget.py` — обработка строк с картами и счетами
 
-#### 6. `mask_account_card(account_card_info: str) -> str`
+#### 5. `mask_account_card(account_card_info: str) -> str`
 
 Принимает строку с типом и номером карты/счета, возвращает строку с замаскированным номером.
 
@@ -296,7 +310,7 @@ print(result)  # Счет **4305
 
 ### Модуль `generators.py` — функции-генераторы (НОВЫЙ МОДУЛЬ)
 
-#### 7. `filter_by_currency(transactions: List[Dict], currency: str = "USD") -> Iterator[Dict]`
+#### 6. `filter_by_currency(transactions: List[Dict], currency: str = "USD") -> Iterator[Dict]`
 
 Генератор, фильтрующий транзакции по валюте.
 
@@ -318,7 +332,7 @@ for tr in usd:
 
 ---
 
-#### 8. `transaction_descriptions(transactions: List[Dict]) -> Iterator[str]`
+#### 7. `transaction_descriptions(transactions: List[Dict]) -> Iterator[str]`
 
 Генератор, возвращающий описания транзакций.
 
@@ -339,7 +353,7 @@ for desc in descriptions:
 
 ---
 
-#### 9. `card_number_generator(start: int, stop: int) -> Iterator[str]`
+#### 8. `card_number_generator(start: int, stop: int) -> Iterator[str]`
 
 Генератор номеров банковских карт в формате `XXXX XXXX XXXX XXXX`.
 
@@ -360,7 +374,7 @@ for card in card_number_generator(1, 5):
 ```
 ### Модуль `decorators.py` — декораторы для логирования
 
-#### `log(filename: Optional[str] = None) -> Callable`
+#### 9`log(filename: Optional[str] = None) -> Callable`
 
 Декоратор для автоматического логирования вызовов функций.
 
@@ -395,7 +409,7 @@ my_function(1, 2)
 
 ### Модуль `file_reader.py` — чтение CSV и XLSX файлов (НОВЫЙ МОДУЛЬ)
 
-#### `read_csv_file(file_path: str) -> List[Dict[str, Any]]`
+#### 10`read_csv_file(file_path: str) -> List[Dict[str, Any]]`
 
 Читает CSV-файл и возвращает список словарей с транзакциями.
 

@@ -1,6 +1,6 @@
 import pytest
 
-from src.processing import filter_by_state, sort_by_date
+from src.processing import count_operations_by_category, filter_by_state, search_by_description, sort_by_date
 
 
 def test_filter_by_state_executed(sample_transactions):
@@ -165,3 +165,91 @@ def test_sort_by_date_parametrized(reverse, expected_first):
     ]
     result = sort_by_date(transactions, reverse=reverse)
     assert result[0]["id"] == expected_first
+
+
+def test_search_by_description_found():
+    """Тест: найдены транзакции с искомой строкой."""
+    transactions = [
+        {"id": 1, "description": "Перевод организации"},
+        {"id": 2, "description": "Оплата услуг"},
+        {"id": 3, "description": "Перевод на карту"},
+    ]
+
+    result = search_by_description(transactions, "перевод")
+
+    assert len(result) == 2
+    assert result[0]["id"] == 1
+    assert result[1]["id"] == 3
+
+
+def test_search_by_description_not_found():
+    """Тест: транзакции не найдены."""
+    transactions = [
+        {"id": 1, "description": "Перевод организации"},
+        {"id": 2, "description": "Оплата услуг"},
+    ]
+
+    result = search_by_description(transactions, "пополнение")
+    assert result == []
+
+
+def test_search_by_description_case_insensitive():
+    """Тест: регистронезависимый поиск."""
+    transactions = [
+        {"id": 1, "description": "ПЕРЕВОД организации"},
+        {"id": 2, "description": "перевод на карту"},
+    ]
+
+    result = search_by_description(transactions, "Перевод")
+    assert len(result) == 2
+
+
+def test_search_by_description_empty():
+    """Тест: пустой список транзакций."""
+    result = search_by_description([], "перевод")
+    assert result == []
+
+
+def test_count_operations_by_category_success():
+    """Тест: успешный подсчёт операций по категориям."""
+    transactions = [
+        {"description": "Перевод организации"},
+        {"description": "Оплата услуг"},
+        {"description": "Перевод на карту"},
+        {"description": "Пополнение счета"},
+    ]
+    categories = ["Перевод", "Оплата"]
+
+    result = count_operations_by_category(transactions, categories)
+    assert result == {"Перевод": 2, "Оплата": 1}
+
+
+def test_count_operations_by_category_case_insensitive():
+    """Тест: регистронезависимый поиск."""
+    transactions = [
+        {"description": "перевод организации"},
+        {"description": "ОПЛАТА услуг"},
+    ]
+    categories = ["Перевод", "Оплата"]
+
+    result = count_operations_by_category(transactions, categories)
+    assert result == {"Перевод": 1, "Оплата": 1}
+
+
+def test_count_operations_by_category_no_matches():
+    """Тест: категории не найдены."""
+    transactions = [
+        {"description": "Перевод организации"},
+    ]
+    categories = ["Пополнение", "Снятие"]
+
+    result = count_operations_by_category(transactions, categories)
+    assert result == {"Пополнение": 0, "Снятие": 0}
+
+
+def test_count_operations_by_category_empty():
+    """Тест: пустой список транзакций."""
+    categories = ["Перевод", "Оплата"]
+
+    result = count_operations_by_category([], categories)
+    assert result == {"Перевод": 0, "Оплата": 0}

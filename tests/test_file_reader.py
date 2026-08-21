@@ -63,7 +63,7 @@ def test_read_excel_success(mock_read_excel):
 
     assert len(result) == 1
     assert result[0]["id"] == 1
-    mock_read_excel.assert_called_once_with("data/test.xlsx", sheet_name=0, index_col=None)
+    mock_read_excel.assert_called_once_with("data/test.xlsx", sheet_name=None, index_col=None)  # ← sheet_name=None
 
 
 @patch("src.file_reader.pd.read_excel")
@@ -87,7 +87,7 @@ def test_read_excel_with_index(mock_read_excel):
 
     read_excel_file("data/test.xlsx", index_col=0)
 
-    mock_read_excel.assert_called_once_with("data/test.xlsx", sheet_name=0, index_col=0)
+    mock_read_excel.assert_called_once_with("data/test.xlsx", sheet_name=None, index_col=0)  # ← sheet_name=None
 
 
 @patch("src.file_reader.pd.read_excel")

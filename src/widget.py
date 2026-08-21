@@ -6,22 +6,6 @@ from src.masks import get_mask_account, get_mask_card_number
 def mask_account_card(account_card_info: str) -> str:
     """
     Маскирует номер банковской карты или счета в строке с указанием типа.
-
-    Args:
-        account_card_info (str): Строка с типом и номером, разделённые пробелом.
-
-    Returns:
-        str: Строка с типом и замаскированным номером.
-
-    Raises:
-        ValueError: Если строка не содержит тип и номер, разделённые пробелом,
-                   или номер пустой, или содержит не цифры.
-
-    Examples:
-        >>> mask_account_card("Visa 7000792289606361")
-        'Visa 7000 79** **** 6361'
-        >>> mask_account_card("Счет 73654108430135874305")
-        'Счет **4305'
     """
     # Проверка на пустую строку
     if not account_card_info or not account_card_info.strip():
@@ -56,19 +40,6 @@ def mask_account_card(account_card_info: str) -> str:
 def get_date(date_string: str) -> str:
     """
     Преобразует строку с датой из формата ISO в формат ДД.ММ.ГГГГ.
-
-    Args:
-        date_string (str): Строка с датой в формате ISO (YYYY-MM-DDTHH:MM:SS.ffffff).
-
-    Returns:
-        str: Дата в формате "ДД.ММ.ГГГГ".
-
-    Raises:
-        ValueError: Если строка не соответствует формату ISO.
-
-    Example:
-        >>> get_date("2024-03-11T02:26:18.671407")
-        '11.03.2024'
     """
     # Проверяем, что строка содержит "T" (разделитель даты и времени)
     if "T" not in date_string:

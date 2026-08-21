@@ -3,32 +3,14 @@
 Содержит функции для фильтрации и сортировки транзакций.
 """
 
+import re
+from collections import Counter
 from typing import Any, Dict, List
 
 
 def filter_by_state(transactions: List[Dict[str, Any]], state: str = "EXECUTED") -> List[Dict[str, Any]]:
     """
     Фильтрует список транзакций по заданному статусу.
-
-    Args:
-        transactions (List[Dict[str, Any]]): Список словарей с транзакциями.
-            Каждый словарь должен содержать ключ 'state'.
-        state (str): Статус для фильтрации. По умолчанию 'EXECUTED'.
-
-    Returns:
-        List[Dict[str, Any]]: Новый список транзакций с указанным статусом.
-
-    Example:
-        >>> transactions = [
-        ...     {'id': 1, 'state': 'EXECUTED', 'date': '2024-01-01'},
-        ...     {'id': 2, 'state': 'PENDING', 'date': '2024-01-02'},
-        ...     {'id': 3, 'state': 'EXECUTED', 'date': '2024-01-03'}
-        ... ]
-        >>> filter_by_state(transactions)
-        [{'id': 1, 'state': 'EXECUTED', 'date': '2024-01-01'}, {'id': 3, 'state': 'EXECUTED', 'date': '2024-01-03'}]
-
-        >>> filter_by_state(transactions, 'PENDING')
-        [{'id': 2, 'state': 'PENDING', 'date': '2024-01-02'}]
     """
     # Проверка на пустой список
     if not transactions:
@@ -41,28 +23,6 @@ def filter_by_state(transactions: List[Dict[str, Any]], state: str = "EXECUTED")
 def sort_by_date(transactions: List[Dict[str, Any]], reverse: bool = True) -> List[Dict[str, Any]]:
     """
     Сортирует список транзакций по дате.
-
-    Args:
-        transactions (List[Dict[str, Any]]): Список словарей с транзакциями.
-            Каждый словарь должен содержать ключ 'date'.
-        reverse (bool): Если True — сортировка по убыванию (сначала новые).
-            Если False — сортировка по возрастанию (сначала старые).
-            По умолчанию True.
-
-    Returns:
-        List[Dict[str, Any]]: Отсортированный список транзакций.
-
-    Example:
-        >>> transactions = [
-        ...     {'id': 1, 'date': '2024-03-11T10:00:00'},
-        ...     {'id': 2, 'date': '2024-03-10T10:00:00'},
-        ...     {'id': 3, 'date': '2024-03-12T10:00:00'}
-        ... ]
-        >>> sort_by_date(transactions)
-        [{'id': 3, 'date': '2024-03-12T10:00:00'}, {'id': 1, 'date': '2024-03-11T10:00:00'}, {'id': 2, 'date': '2024-03-10T10:00:00'}]
-
-        >>> sort_by_date(transactions, reverse=False)
-        [{'id': 2, 'date': '2024-03-10T10:00:00'}, {'id': 1, 'date': '2024-03-11T10:00:00'}, {'id': 3, 'date': '2024-03-12T10:00:00'}]
     """
     if not transactions:
         return []
@@ -70,3 +30,30 @@ def sort_by_date(transactions: List[Dict[str, Any]], reverse: bool = True) -> Li
     # Сортировка по ключу 'date'
     # Если в каком-то словаре нет ключа 'date', используется пустая строка
     return sorted(transactions, key=lambda x: x.get("date", ""), reverse=reverse)
+
+
+def search_by_description(transactions: List[Dict[str, Any]], search_string: str) -> List[Dict[str, Any]]:
+    """
+    Ищет транзакции, в описании которых содержится заданная строка (регистронезависимо).
+    """
+    if not transactions or not search_string:
+        return transactions if transactions else []
+
+    # Экранируем специальные символы и делаем поиск регистронезависимым
+    pattern = re.compile(re.escape(search_string), re.IGNORECASE)
+
+    return [item for item in transactions if pattern.search(item.get("description", ""))]
+
+
+def count_operations_by_category(transactions: List[Dict[str, Any]], categories: List[str]) -> Dict[str, int]:
+    # Собираем все категории из описаний
+    found = []
+    for transaction in transactions:
+        description = transaction.get("description", "")
+        for category in categories:
+            if category.lower() in description.lower():
+                found.append(category)
+                break
+
+    counter = Counter(found)
+    return {category: counter.get(category, 0) for category in categories}
