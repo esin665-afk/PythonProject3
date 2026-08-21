@@ -172,15 +172,16 @@ pip install flake8 black isort mypy
 
 ## 📦 Структура проекта (для справки)
 
-```
 src/
-├── __init__.py
-├── decorators.py         # Декораторы для логирования (НОВЫЙ МОДУЛЬ)
-├── generators.py
-├── masks.py
-├── processing.py
-└── widget.py
-```
+├── init.py
+├── decorators.py # Декораторы для логирования
+├── external_api.py # Конвертация валют через внешнее API
+├── file_reader.py # Чтение CSV и XLSX файлов (НОВЫЙ МОДУЛЬ)
+├── generators.py # Функции-генераторы
+├── masks.py # Маскирование данных
+├── processing.py # Фильтрация и сортировка транзакций
+├── utils.py # Вспомогательные функции
+└── widget.py # Обработка строк с картами и счетами
 
 ---
 
@@ -391,6 +392,20 @@ def my_function(x, y):
 my_function(1, 2)
 # mylog.txt: my_function ok
 ---
+
+### Модуль `file_reader.py` — чтение CSV и XLSX файлов (НОВЫЙ МОДУЛЬ)
+
+#### `read_csv_file(file_path: str) -> List[Dict[str, Any]]`
+
+Читает CSV-файл и возвращает список словарей с транзакциями.
+
+**Пример:**
+```python
+from src.file_reader import read_csv_file
+
+data = read_csv_file("data/transactions.csv")
+print(f"Загружено {len(data)} записей")
+
 ### 🔄 Комбинированное использование
 
 ```python
@@ -422,6 +437,9 @@ poetry run pytest tests/test_processing.py -v
 poetry run pytest tests/test_widget.py -v
 poetry run pytest tests/test_generators.py -v
 poetry run pytest tests/test_decorators.py -v
+poetry run pytest tests/test_file_reader.py -v
+poetry run pytest tests/test_external_api.py -v
+poetry run pytest tests/test_utils.py -v
 
 ### Запуск тестов с отчётом о покрытии
 
@@ -432,24 +450,41 @@ poetry run pytest tests/ --cov=src --cov-report=term-missing
 ### Пример вывода
 
 ============================= test session starts ==============================
-collected 38 items
+collected 99 items
 
-tests/test_masks.py ............ [ 31%]
-tests/test_processing.py ........ [ 52%]
-tests/test_widget.py ........ [ 73%]
-tests/test_generators.py ..... [ 89%]
-tests/test_decorators.py ..... [100%]
+tests/test_decorators.py ..... [ 5%]
+tests/test_external_api.py .... [ 9%]
+tests/test_file_reader.py ........ [ 17%]
+tests/test_generators.py ..................... [ 38%]
+tests/test_masks.py ................... [ 57%]
+tests/test_processing.py .................... [ 77%]
+tests/test_utils.py ..... [ 82%]
+tests/test_widget.py ................. [100%]
 
-============================== 38 passed in 0.20s ==============================
+============================== 99 passed in 3.67s ==============================
 ### Покрытие кода тестами
 
-Цель проекта — **не менее 80% покрытия**. Для проверки используйте команду:
+Цель проекта — **не менее 80% покрытия**.
+
+**Текущее покрытие:** **96%** ✅
+
+| Модуль | Покрытие |
+|--------|----------|
+| `decorators.py` | 100% |
+| `external_api.py` | 96% |
+| `file_reader.py` | 100% |
+| `generators.py` | 92% |
+| `masks.py` | 100% |
+| `processing.py` | 100% |
+| `utils.py` | 91% |
+| `widget.py` | 96% |
+| **Общее** | **96%** |
+
+Для проверки покрытия используйте команду: 
 
 ```bash
 poetry run pytest tests/ --cov=src --cov-report=html
-```
 
-После этого откройте `htmlcov/index.html` в браузере, чтобы увидеть детальный отчёт по каждой функции и строке кода
 ### Структура тестов
 
 tests/
@@ -458,16 +493,25 @@ tests/
 ├── test_processing.py # Тесты для модуля processing
 ├── test_widget.py # Тесты для модуля widget
 ├── test_generators.py # Тесты для модуля generators
-└── test_decorators.py # Тесты для модуля decorators (НОВЫЙ)
+├── test_decorators.py # Тесты для модуля decorators
+├── test_file_reader.py # Тесты для модуля file_reader (НОВЫЙ)
+├── test_external_api.py # Тесты для модуля external_api (НОВЫЙ)
+└── test_utils.py # Тесты для модуля utils (НОВЫЙ)
+
 ### Что тестируется
 
 | Модуль | Функции | Количество тестов |
 |--------|---------|-------------------|
-| `masks.py` | `get_mask_card_number`, `get_mask_account`, `get_date` | ~15 |
-| `processing.py` | `filter_by_state`, `sort_by_date` | ~10 |
-| `widget.py` | `mask_account_card` | ~8 |
-| `generators.py` | `filter_by_currency`, `transaction_descriptions`, `card_number_generator` | ~18 |
-| `decorators.py` | `log` | ~6 |
+| `masks.py` | `get_mask_card_number`, `get_mask_account`, `get_date` | ~19 |
+| `processing.py` | `filter_by_state`, `sort_by_date` | ~18 |
+| `widget.py` | `mask_account_card` | ~14 |
+| `generators.py` | `filter_by_currency`, `transaction_descriptions`, `card_number_generator` | ~26 |
+| `decorators.py` | `log` | ~5 |
+| `file_reader.py` | `read_csv_file`, `read_excel_file` | ~8 |
+| `external_api.py` | `convert_to_rubles` | ~4 |
+| `utils.py` | `load_transactions_from_json` | ~5 |
+| **Всего** | | **~99** |
+
 Все тесты используют:
 - ✅ Фикстуры для общих данных
 - ✅ Параметризацию для разных случаев
