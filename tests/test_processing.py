@@ -1,5 +1,5 @@
 import pytest
-from src.processing import filter_by_state, sort_by_date, search_by_description
+from src.processing import filter_by_state, sort_by_date, search_by_description, count_operations_by_category
 
 
 def test_filter_by_state_executed(sample_transactions):
@@ -207,3 +207,48 @@ def test_search_by_description_empty():
     """Тест: пустой список транзакций."""
     result = search_by_description([], "перевод")
     assert result == []
+
+
+def test_count_operations_by_category_success():
+    """Тест: успешный подсчёт операций по категориям."""
+    transactions = [
+        {"description": "Перевод организации"},
+        {"description": "Оплата услуг"},
+        {"description": "Перевод на карту"},
+        {"description": "Пополнение счета"},
+    ]
+    categories = ["Перевод", "Оплата"]
+
+    result = count_operations_by_category(transactions, categories)
+    assert result == {"Перевод": 2, "Оплата": 1}
+
+
+def test_count_operations_by_category_case_insensitive():
+    """Тест: регистронезависимый поиск."""
+    transactions = [
+        {"description": "перевод организации"},
+        {"description": "ОПЛАТА услуг"},
+    ]
+    categories = ["Перевод", "Оплата"]
+
+    result = count_operations_by_category(transactions, categories)
+    assert result == {"Перевод": 1, "Оплата": 1}
+
+
+def test_count_operations_by_category_no_matches():
+    """Тест: категории не найдены."""
+    transactions = [
+        {"description": "Перевод организации"},
+    ]
+    categories = ["Пополнение", "Снятие"]
+
+    result = count_operations_by_category(transactions, categories)
+    assert result == {"Пополнение": 0, "Снятие": 0}
+
+
+def test_count_operations_by_category_empty():
+    """Тест: пустой список транзакций."""
+    categories = ["Перевод", "Оплата"]
+
+    result = count_operations_by_category([], categories)
+    assert result == {"Перевод": 0, "Оплата": 0}
