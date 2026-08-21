@@ -1,15 +1,24 @@
-from typing import Any, Dict, List
+"""
+Модуль для чтения финансовых транзакций из CSV и XLSX файлов.
+"""
 
 import pandas as pd
+from typing import List, Dict, Any, Optional
 
 
 def read_csv_file(file_path: str) -> List[Dict[str, Any]]:
-    """Читает CSV-файл и возвращает список словарей с транзакциями."""
-    df = pd.read_csv(file_path)
-    return df.to_dict(orient="records")
+    """
+    Читает CSV-файл и возвращает список словарей с транзакциями.
+    """
+    df = pd.read_csv(file_path)  # type: ignore
+    result = df.to_dict(orient='records')  # type: ignore
+    return result  # type: ignore
 
 
-def read_excel_file(file_path: str, sheet_name: str = 0, index_col: int = None) -> List[Dict[str, Any]]:
-    """Читает XLSX-файл и возвращает список словарей с транзакциями."""
-    df = pd.read_excel(file_path, sheet_name=sheet_name, index_col=index_col)
-    return df.to_dict(orient="records")
+def read_excel_file(file_path: str, sheet_name: Optional[str] = None, index_col: Optional[int] = None) -> List[Dict[str, Any]]:
+    """
+    Читает XLSX-файл и возвращает список словарей с транзакциями.
+    """
+    df = pd.read_excel(file_path, sheet_name=sheet_name, index_col=index_col)  # type: ignore
+    result = df.to_dict(orient='records')  # type: ignore
+    return result  # type: ignore
